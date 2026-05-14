@@ -66,10 +66,9 @@ async def generate_bg(prompt: str) -> bytes:
                 "Content-Type":  "application/json"
             },
             json={
-                "model":   "dall-e-3",
+                "model":   "dall-e-2",
                 "prompt":  prompt,
                 "size":    "1024x1024",
-                "quality": "hd",
                 "n":       1
             }
         )
