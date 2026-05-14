@@ -56,30 +56,16 @@ def get_prompt(gender: str) -> str:
             "Gold foil accents, high quality, Instagram-worthy."
         )
 
-# ── توليد الصورة من DALL-E 3 ──────────────────────────────────────────────
+# ── توليد الصورة من Pollinations.ai (مجاني) ──────────────────────────────
 async def generate_bg(prompt: str) -> bytes:
-    async with httpx.AsyncClient(timeout=90) as client:
-        res = await client.post(
-            "https://api.openai.com/v1/images/generations",
-            headers={
-                "Authorization": f"Bearer {OPENAI_KEY}",
-                "Content-Type":  "application/json"
-            },
-            json={
-                "model":   "dall-e-2",
-                "prompt":  prompt,
-                "size":    "1024x1024",
-                "n":       1
-            }
-        )
-        data    = res.json()
-        if "error" in data:
-            raise Exception(f"OpenAI: {data['error'].get('message', str(data['error']))}")
-        if "data" not in data:
-            raise Exception(f"OpenAI response: {str(data)[:300]}")
-        img_url = data["data"][0]["url"]
-        img_res = await client.get(img_url)
-        return img_res.content
+    import urllib.parse
+    encoded = urllib.parse.quote(prompt)
+    url     = f"https://image.pollinations.ai/prompt/{encoded}?width=1024&height=1024&nologo=true&model=flux"
+    async with httpx.AsyncClient(timeout=120) as client:
+        res = await client.get(url)
+        if res.status_code != 200:
+            raise Exception(f"Pollinations error: {res.status_code}")
+        return res.content
 
 # ── إضافة النص على الصورة ──────────────────────────────────────────────────
 def add_text(img_bytes: bytes, name: str, gender: str, lang: str) -> bytes:
