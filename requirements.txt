@@ -1,0 +1,5 @@
+httpx
+Pillow
+arabic-reshaper
+python-bidi
+requests
