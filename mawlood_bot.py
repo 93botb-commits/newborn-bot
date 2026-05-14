@@ -74,6 +74,10 @@ async def generate_bg(prompt: str) -> bytes:
             }
         )
         data    = res.json()
+        if "error" in data:
+            raise Exception(f"OpenAI: {data['error'].get('message', str(data['error']))}")
+        if "data" not in data:
+            raise Exception(f"OpenAI response: {str(data)[:300]}")
         img_url = data["data"][0]["url"]
         img_res = await client.get(img_url)
         return img_res.content
